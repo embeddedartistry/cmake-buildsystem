@@ -41,10 +41,6 @@ set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
 set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
 set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)
 
-# Test compiles will use static libraries, so we won't need to define linker flags
-# and scripts for linking to succeed
-set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
-
 ################
 # Common Flags #
 ################
@@ -67,6 +63,6 @@ set(CMAKE_ASM_FLAGS_INIT
 	CACHE
 	INTERNAL "Default ASM compiler flags.")
 set(CMAKE_EXE_LINKER_FLAGS_INIT
-	"${CPU_FLAGS} ${LD_FLAGS} -Wl,--gc-sections"
+	"${LD_FLAGS} -Wl,--gc-sections"
 	CACHE
 	INTERNAL "Default linker flags.")
