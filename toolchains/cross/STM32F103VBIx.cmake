@@ -2,6 +2,15 @@
 # STM32F103VBIx (Cortex-M3) #
 #############################
 
+# CMake includes the toolchain file multiple times when configuring the build,
+# which causes errors for some flags (e.g., --specs=nano.specs).
+# We prevent this with an include guard.
+if(STM32F103VBIx_TOOLCHAIN_INCLUDED)
+	return()
+endif()
+
+set(STM32F103VBIx_TOOLCHAIN_INCLUDED true)
+
 set(CPU_NAME STM32F103VBIx)
 
 set(LINKER_SCRIPT_DIR ${CMAKE_SOURCE_DIR}/cmake/linker-scripts/stm)
