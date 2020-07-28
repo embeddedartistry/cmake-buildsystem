@@ -15,12 +15,7 @@ set(desired_common_warning_flags
 	-fdiagnostics-show-option
 	-fcolor-diagnostics
 	# Disabled Warnings
-	-Wno-c++98-compat
-	-Wno-c++98-compat-pedantic
 	-Wno-padded
-	-Wno-exit-time-destructors # causes warnings if you use static values
-	-Wno-global-constructors # causes warnings if you use static values
-	-Wno-covered-switch-default
 	# Desired Warnings
 	-Wfloat-equal
 	-Wconversion
@@ -65,6 +60,12 @@ set(desired_cpp_warning_flags
 	-Wuseless-cast
 	-Wzero-as-null-pointer-constant
 	-Wextra-semi
+	# Disabled Warnings
+	-Wno-c++98-compat
+	-Wno-c++98-compat-pedantic
+	-Wno-exit-time-destructors # causes warnings if you use static values
+	-Wno-global-constructors # causes warnings if you use static values
+	-Wno-covered-switch-default
 )
 
 set(desired_common_compiler_optimization_flags
