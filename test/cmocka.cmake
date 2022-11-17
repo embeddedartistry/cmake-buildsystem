@@ -40,6 +40,12 @@ if(NOT cmocka_FOUND)
     DOWNLOAD_ONLY YES
   )
 
+  # Convenience variable to shorten our code below
+  set(CMOCKA_STATIC_FILENAME
+    ${CMAKE_STATIC_LIBRARY_PREFIX}cmocka-static${CMAKE_STATIC_LIBRARY_SUFFIX}
+  )
+
+
   # We would normally use CPMAddPackage, but CMocka's build presents problems.
   # So we include it as an external project, which allows us to build the lib
   # separately and then link it in.
@@ -47,25 +53,35 @@ if(NOT cmocka_FOUND)
   ExternalProject_Add(project_cmocka
     SOURCE_DIR ${cmocka_SOURCE_DIR}
     PREFIX ${CMAKE_CURRENT_BINARY_DIR}/cmocka
-    CMAKE_ARGS -DBUILD_STATIC_LIB=ON -DWITH_EXAMPLES=OFF -DCMAKE_BUILD_TYPE=Debug
+    BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/cmocka
+      CMAKE_ARGS
+        -DBUILD_STATIC_LIB=ON
+        -DWITH_STATIC_LIB=ON # Without this, Cmocka will not install the static lib
+        -DWITH_EXAMPLES=OFF
+        -DCMAKE_BUILD_TYPE=Debug
+        -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/cmocka
+      # This is needed with Ninja generators to prevent it from failing due to
+      # the library being missing before the build has been run
+      BUILD_BYPRODUCTS ${CMAKE_CURRENT_BINARY_DIR}/cmocka/lib/${CMOCKA_STATIC_FILENAME}
   )
 
   # We need to get the CMocka installation directory to know where our
   # built libraries can be found
-  ExternalProject_Get_Property(project_cmocka INSTALL_DIR)
-  # We need to get the include directory path from the project
-  ExternalProject_Get_Property(project_cmocka CMOCKA_INCLUDE_DIR)
+  ExternalProject_Get_Property(project_cmocka BINARY_DIR)
 
   # Now we define an IMPORTED library target and tell CMake where the library
   # files can be found. To ensure the build flows in the proper order,
   # we'll add a dependency on the ExternalProject target above, which will
   # ensure the library is built before we try to link it
-  add_library(cmocka IMPORTED STATIC)
-  set_target_properties(cmocka PROPERTIES IMPORTED_LOCATION ${INSTALL_DIR})
-  add_dependencies(cmocka project_cmocka)
+  add_library(cmocka-static STATIC IMPORTED)
+  set_target_properties(cmocka-static PROPERTIES
+    IMPORTED_LOCATION ${BINARY_DIR}/lib/${CMOCKA_STATIC_FILENAME}
+  )
+  add_dependencies(cmocka-static project_cmocka)
 
   # Maintain build compatibility between find_package and CMakeLists.txt variants.
-  set(CMOCKA_LIBRARIES cmocka)
+  set(CMOCKA_LIBRARIES cmocka-static)
+  set(CMOCKA_INCLUDE_DIR ${BINARY_DIR}/include)
 endif()
 
 add_library(cmocka_dep INTERFACE)
