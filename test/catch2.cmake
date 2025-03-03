@@ -70,7 +70,7 @@ endif()
 CPMAddPackage(
   NAME Catch2
   GITHUB_REPOSITORY catchorg/Catch2
-  VERSION 2.13.0
+  VERSION 3.8.0
   OPTIONS
   	${CATCH2_DEP_SETTINGS}
 )
