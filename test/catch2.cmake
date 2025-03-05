@@ -8,8 +8,8 @@
 # By default, XML output will be placed in ${CMAKE_BINARY_DIR}/test. You can change this
 # by setting CATCH2_TEST_OUTPUT_DIR before you include this module.
 #
-# We provide a default main implementation for Catch2 test programs. If you wish to define your
-# own main file, set CATCH2_MAIN_FILE with the path to your file.
+# By default, you use the Catch2 built-in main. If you wish to define your own main file,
+# set CATCH2_MAIN_FILE with the path to your file. You'll link against Catch2 dep instead.
 #
 # We disable many options in the Catch2 dependency, such as building tests and installing docs/helpers.
 # You can pass your own settings to the dependency by setting the CATCH2_DEP_SETTINGS variable.
@@ -29,7 +29,7 @@ include(${CMAKE_CURRENT_LIST_DIR}/../CPM.cmake)
 
 ## Set Default Options
 if(NOT CATCH2_MAIN_FILE)
-  set(CATCH2_MAIN_FILE ${CMAKE_CURRENT_LIST_DIR}/catch_main.cpp CACHE STRING "The file that contains the definiton of main for Catch2.")
+  set(CATCH2_MAIN_FILE "" CACHE STRING "The file that contains the definiton of a custom main for Catch2.")
 endif()
 
 if(NOT CATCH2_TEST_OUTPUT_DIR)
@@ -77,8 +77,12 @@ CPMAddPackage(
 
 # Define a build target that users can link against to build a Catch2 test program
 add_library(catch2_dep INTERFACE)
-target_link_libraries(catch2_dep INTERFACE Catch2)
-target_sources(catch2_dep INTERFACE ${CATCH2_MAIN_FILE})
+if(CATCH2_MAIN_FILE)
+	target_link_libraries(catch2_dep INTERFACE Catch2)
+	target_sources(catch2_dep INTERFACE ${CATCH2_MAIN_FILE})
+else()
+	target_link_libraries(catch2_dep INTERFACE Catch2WithMain)
+endif()
 target_compile_options(catch2_dep INTERFACE ${CATCH2_COMPILE_SETTINGS})
 
 ################################
