@@ -85,7 +85,7 @@ if(NOT cmocka_FOUND)
 endif()
 
 add_library(cmocka_dep INTERFACE)
-target_include_directories(cmocka_dep INTERFACE ${CMOCKA_INCLUDE_DIR})
+target_include_directories(cmocka_dep INTERFACE SYSTEM ${CMOCKA_INCLUDE_DIR})
 target_link_libraries(cmocka_dep INTERFACE ${CMOCKA_LIBRARIES})
 
 ##################
